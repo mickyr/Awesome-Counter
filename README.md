@@ -1,2 +1,2 @@
 # ResettableThreadSafeCounter
-A Simple api to create thread safe counters in java that are reset based in time interval
+A Simple api to create thread safe counters in java that are reset based in time interval. Named counters that are reset to 0 on a daily, hourly or per minute basis. A sample usage - Keep counter for a specific application/Business event to be used for logging or checking for limits. Check if particular resource has been used more than its daily limit and stop access to it.
