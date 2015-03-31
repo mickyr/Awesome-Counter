@@ -1,7 +1,12 @@
-# ResettableThreadSafeCounter
-A Simple api to create thread safe counters in java that are reset based in time interval. Named counters that are reset to 0 on a daily, hourly or per minute basis. A sample usage - Keep counter for a specific application/Business event to be used for logging or checking for limits. Check if particular resource has been used more than its daily limit and stop access to it.
+# Awesome-Counter Wiki
 
-The following test would help explain its usage:
+Awesome-Counter is a simple api to create thread safe counters in java that are reset based on different policies(e.g. manual, time-interval based).  
+It allows you to create registries with named counters that are reset to 0 on a policy(e.g. daily, hourly or per minute) basis.  
+The most important thing is that it is **Thread-safe and yet fast** ( Hopefully :) ). So it should make a good server side component for performance oriented web-applications.  
+
+A sample usage - Keep counter for a specific application/Business event to be used for logging, monitoring or alerting if certain thresholds are rechaed within a certain time limit or simply to keep a minute by minute graph or user interations with a feature in your application or to check if particular resource has been used more than its time based limit and stop access to it. 
+
+The following test snippet should help explain its usage:
 
 ```java
 
