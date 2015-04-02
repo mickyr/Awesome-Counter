@@ -39,21 +39,8 @@ public class ResettableCounterRegistry {
      * @throws IllegalCounterException 
      */
     public int incrementCount(String counterName) throws IllegalCounterException{
-        ResettableCounter counter = counterRegistry.get(counterName);
-        if(counter == null)throw new IllegalCounterException("No such counter: "+counterName+" exists in this registry. Please add counter to this registry by using addCounter");
-        DateFormat dateFormat = new SimpleDateFormat(counter.getPolicy().getFormat());
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-        //For scheduled reset counters, create new representation of time and compare it
-        //to the last representation. If it has changed, the time window must have moved over
-        //to a new one, so reset the counter
-        if(!counter.getPolicy().equals(CounterResetPolicy.MANUAL) && !dateFormat.format(cal.getTime()).equals(counter.getCounterResetString())){
-            int count = counter.getCount().get();
-            if(counter.getCount().compareAndSet(count, 0))
-                counter.setCounterResetString(dateFormat.format(cal.getTime()));
-            counter.getCount().incrementAndGet();
-            return counter.getCount().get();
-        }
-        else return counter.getCount().incrementAndGet();
+    	ResettableCounter counter = resetAndGetCounter(counterName);
+        return counter.getCount().incrementAndGet();
     }
     
     /**
@@ -66,18 +53,7 @@ public class ResettableCounterRegistry {
      * @throws IllegalCounterException 
      */
     public int getCount(String counterName) throws IllegalCounterException{
-        ResettableCounter counter = counterRegistry.get(counterName);
-        if(counter == null)throw new IllegalCounterException("No such counter: "+counterName+" exists in this registry. Please add counter to this registry by using addCounter");
-        DateFormat dateFormat = new SimpleDateFormat(counter.getPolicy().getFormat());
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-        //For scheduled reset counters, create new representation of time and compare it
-        //to the last representation. If it has changed, the time window must have moved over
-        //to a new one, so reset the counter
-        if(!counter.getPolicy().equals(CounterResetPolicy.MANUAL) && !dateFormat.format(cal.getTime()).equals(counter.getCounterResetString())){
-            int count = counter.getCount().get();
-            if(counter.getCount().compareAndSet(count, 0))
-                counter.setCounterResetString(dateFormat.format(cal.getTime()));
-        }
+    	ResettableCounter counter = resetAndGetCounter(counterName);
         return counter.getCount().get();
     }
     
@@ -94,5 +70,25 @@ public class ResettableCounterRegistry {
         if(counter == null || !counter.getPolicy().equals(CounterResetPolicy.MANUAL))throw new IllegalCounterException("No such counter: "+counterName+" exists in this registry or counter is not MANUAL. Please add counter to this registry by using addCounter");    	
         return counter.getCount().getAndSet(0);
     }
+    
+    /**
+     * Returns the resettable counter by name after checking for existence and resetting it if necessary
+     * 
+     * @param counterName The name of the counter
+     * @return The resettable counter by name
+     * @throws IllegalCounterException
+     */
+    private ResettableCounter resetAndGetCounter(String counterName) throws IllegalCounterException{
+        ResettableCounter counter = counterRegistry.get(counterName);
+        if(counter == null)throw new IllegalCounterException("No such counter: "+counterName+" exists in this registry. Please add counter to this registry by using addCounter");
+        DateFormat dateFormat = new SimpleDateFormat(counter.getPolicy().getFormat());
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));    	
+        if(!counter.getPolicy().equals(CounterResetPolicy.MANUAL) && !dateFormat.format(cal.getTime()).equals(counter.getCounterResetString())){
+            int count = counter.getCount().get();
+            if(counter.getCount().compareAndSet(count, 0))
+                counter.setCounterResetString(dateFormat.format(cal.getTime()));
+        }
+        return counter;
+    }    
    
 }

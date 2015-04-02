@@ -25,7 +25,7 @@ public class ResettableCounter {
 		return counterResetString;
 	}
 
-	public synchronized void setCounterResetString(String counterResetString) {
+	public void setCounterResetString(String counterResetString) {
 		this.counterResetString = counterResetString;
 	}
 
